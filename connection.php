@@ -16,17 +16,17 @@
                 if (!is_null($dbname)){
                     $conn = new mysqli($servername, $username, $password, $dbname);
                 } else {
-                    die("Connection failed: database not specified");
+                    die("Error de conexión: no se ha especificado la base de datos");
                 }
             } else {
-                die("Connection failed: password not specified");
+                die("Error de conexión: no se ha especificado la contraseña");
             }
         } else {
-            die("Connection failed: username not specified");
+            die("Error de conexión: no se ha especificado el nombre de usuario");
         }
     } else {
-        die("Connection failed: Server/host not specified");
+        die("Error de conexión: no se ha especificado el servidor ni el host");
     }
     if ($conn->connect_error != null){
-        die("Connection failed: {$conn->connect_error}");
+        die("Error de conexión: {$conn->connect_error}");
     }

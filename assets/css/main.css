@@ -88,11 +88,7 @@ h6 {
 
 .header .logo {
   line-height: 1;
-}
-
-.header .logo img {
-  max-height: 32px;
-  margin-right: 8px;
+  text-decoration: none !important;
 }
 
 .header .logo h1 {

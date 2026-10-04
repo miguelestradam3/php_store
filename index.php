@@ -1,25 +1,27 @@
 <?php
+    session_start();
+
     // 1. Bring in the connection file
     require_once 'connection.php';
 
     // Sql to check if table exists
     $sql_table = "SELECT * FROM `productos`";
 
+    mysqli_set_charset($conn, "utf8mb4");
+
 ?>
+<!DOCTYPE html>
 <html lang="es">
     <head>
-        
+        <!-- utf-8 charset -->
         <meta charset="utf-8">
+
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>PHP Avanzado - Fidelitas</title>
 
         <!-- Favicons -->
-        <link href="docs/img/phpicon.png" rel="icon">
-        <link href="docs/img/phpicon.png" rel="apple-touch-icon">
-
-        <!-- CSS assets -->
-        <link href="assets/css/main.css" rel="stylesheet" type="text/css">
-
+        <link href="assets/img/phpicon.png" rel="icon">
+        <link href="assets/img/phpicon.png" rel="apple-touch-icon">
 
         <!-- Bootstrap -->
         <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -35,10 +37,36 @@
 
     </head>
     <body class="index-page">
-        <header id="header" class="header d-flex align-items-center sticky-top">
+        <header id="header" class="dark-background header d-flex align-items-center sticky-top">
             <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
+
                 <a href="index.php" class="logo d-flex align-items-center">
                     <h1 class="sitename">PHP Avanzado</h1>
+                </a>
+
+                <a href="cart.php" class="btn btn-primary">
+                    <i class="bi bi-cart"></i>
+                    Carrito
+
+                    <?php
+                    $cart_count = 0;
+
+                    if (isset($_SESSION['cart'])) {
+                        foreach ($_SESSION['cart'] as $quantity) {
+                            $cart_count += $quantity;
+                        }
+                    }
+
+                    echo "($cart_count)";
+                    ?>
+                </a>
+                <a
+                    href="clear_cart.php"
+                    class="btn btn-danger ms-2"
+                    onclick="return confirm('¿Estás seguro de que quieres vaciar el carrito?');"
+                >
+                    <i class="bi bi-trash"></i>
+                    Vaciar carrito
                 </a>
             </div>
         </header>
@@ -65,6 +93,14 @@
                                                 <h5 class="card-title">'.htmlspecialchars($row['nombre']).'</h5>
                                                 <p class="card-text"><strong>Detalle:</strong> '.htmlspecialchars($row['detalle']).'</p>
                                                 <p class="card-text"><strong>Precio:</strong> $'.number_format($row['precio'], 2).'</p>
+                                                <form action="add_to_cart.php" method="POST">
+                                                    <input type="hidden" name="producto_id" value="'.$row['codigo'].'">
+
+                                                    <button type="submit" class="btn btn-primary w-100">
+                                                        <i class="bi bi-cart-plus"></i>
+                                                        Agregar al carrito
+                                                    </button>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
@@ -73,11 +109,11 @@
                                 echo '</div>'; 
                             } 
                             else { 
-                                echo "No matching records are found."; 
+                                echo "No se han encontrado registros que coincidan."; 
                             } 
                         } 
                         else { 
-                            die("ERROR: Could not able to execute query. " . $conn->error); 
+                            die("ERROR: No se ha podido ejecutar la consulta. " . $conn->error); 
                         }
                     ?>
                 </div>
@@ -120,7 +156,8 @@
                 </div>
             </div>
         </footer>
-        <link href="assets/vendor/bootstrap/js/bootstrap.bundle.min.js" rel="stylesheet">
+        <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
         <!-- Custom JavaScript --> 
          <script src="assets/javascript/main.js"></script>
-    </body
+    </body>
+</html>
