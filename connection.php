@@ -30,3 +30,5 @@
     if ($conn->connect_error != null){
         die("Error de conexión: {$conn->connect_error}");
     }
+    
+    mysqli_set_charset($conn, "utf8mb4");

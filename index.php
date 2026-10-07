@@ -7,8 +7,6 @@
     // Sql to check if table exists
     $sql_table = "SELECT * FROM `productos`";
 
-    mysqli_set_charset($conn, "utf8mb4");
-
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -118,8 +116,55 @@
                     ?>
                 </div>
             </section>
+            <!-- Contact Section -->
+            <section id="contact" class="dark-background contact section">
+
+            <!-- Section Title -->
+            <div class="container section-title">
+                <h2>Contacto</h2>
+                <p>Tanto si tienes alguna pregunta, un proyecto en mente o simplemente quieres ponerte en contacto conmigo, no dudes en hacerlo. Haré todo lo posible por responderte lo antes posible.</p>
+            </div><!-- End Section Title -->
+
+            <div class="container">
+
+                <div class="row gy-4">
+
+                <div class="col-lg-12">
+                    <form action="contact.php" method="POST" class="email-form">
+                        <div class="row gy-4">
+
+                            <div class="col-md-6">
+                            <input type="text" id="name" name="name" class="form-control" placeholder="Su nombre" required>
+                            </div>
+
+                            <div class="col-md-6">
+                            <input type="text" id="phone" name="phone" class="form-control" placeholder="Su numero de telefono" required>
+                            </div>
+
+                            <div class="col-md-12">
+                            <input type="email" id="email" class="form-control" name="email" placeholder="Su Email (correo electronico)" required>
+                            </div>
+
+                            <div class="col-md-12">
+                            <textarea class="form-control" id="subject" name="subject" rows="2" placeholder="Mensaje" required></textarea>
+                            </div>
+
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary w-100" type="submit">Enviar mensaje</button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+
+                </div>
+
+            </div>
+
+            </section>
+            <!-- /Contact Section -->
         </main>
-        <footer id="footer" class="footer light-background">
+        <footer id="footer" class="footer dark-background">
             <div class="container">
                 <div class="row g-4">
                     <div class="col-md-4 col-lg-4 mb-3 mb-md-0">

@@ -70,6 +70,15 @@ $total = 0;
             ?>
         </a>
 
+        <a
+            href="clear_cart.php"
+            class="btn btn-danger ms-2"
+            onclick="return confirm('¿Estás seguro de que quieres vaciar el carrito?');"
+        >
+            <i class="bi bi-trash"></i>
+            Vaciar carrito
+        </a>
+
         <a href="index.php" class="btn btn-light">
             <i class="bi bi-arrow-left"></i>
             Seguir comprando
@@ -77,228 +86,284 @@ $total = 0;
     </div>
 </header>
 
-<main class="main container py-5">
+<main class="main">
+    <section class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <?php if (empty($cart)): ?>
 
-    <?php if (empty($cart)): ?>
+                        <div class="alert alert-info text-center">
 
-        <div class="alert alert-info text-center">
+                            <i class="bi bi-cart-x"></i>
 
-            <i class="bi bi-cart-x"></i>
-
-            El carrito está vacío.
-
-        </div>
-
-    <?php else: ?>
-
-        <div class="table-responsive">
-
-            <div class="container">
-                <div class="row">
-                    <p>Cuando se actualiza o cambia la cantidad de un item, para actualizar el <strong>subtotal</strong> y el <strong>total</strong> hay que dar click en el boton: <i class="bi bi-arrow-repeat"></i> junto al display de cantidad</p>
-                </div>
-            </div>
-
-            <table class="table table-bordered align-middle">
-
-                <thead class="table-dark">
-
-                    <tr>
-
-                        <th>Producto</th>
-
-                        <th>Precio</th>
-
-                        <th>Cantidad</th>
-
-                        <th>Subtotal</th>
-
-                        <th>Acciones</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                <?php
-
-                foreach ($cart as $producto_id => $quantity):
-
-                    $stmt = $conn->prepare(
-                        "SELECT codigo, nombre, precio, imagen
-                         FROM productos
-                         WHERE codigo = ?"
-                    );
-
-                    $stmt->bind_param("i", $producto_id);
-
-                    $stmt->execute();
-
-                    $result = $stmt->get_result();
-
-                    $producto = $result->fetch_assoc();
-
-                    if (!$producto) {
-                        continue;
-                    }
-
-                    $subtotal = $producto['precio'] * $quantity;
-
-                    $total += $subtotal;
-
-                ?>
-
-                    <tr>
-
-                        <td>
-
-                            <div class="d-flex align-items-center">
-
-                                <img
-                                    src="<?= htmlspecialchars($producto['imagen']) ?>"
-                                    width="70"
-                                    height="70"
-                                    class="rounded me-3"
-                                    style="object-fit: cover;"
-                                    alt="<?= htmlspecialchars($producto['nombre']) ?>"
-                                >
-
-                                <strong>
-                                    <?= htmlspecialchars($producto['nombre']) ?>
-                                </strong>
-
-                            </div>
-
-                        </td>
-
-                        <td>
-
-                            $<?= number_format($producto['precio'], 2) ?>
-
-                        </td>
-
-                        <td>
-
-                            <form
-                                action="update_cart.php"
-                                method="POST"
-                                class="d-flex"
-                            >
-
-                                <input
-                                    type="hidden"
-                                    name="producto_id"
-                                    value="<?= $producto['codigo'] ?>"
-                                >
-
-                                <input
-                                    type="number"
-                                    name="quantity"
-                                    value="<?= $quantity ?>"
-                                    min="1"
-                                    class="form-control"
-                                    style="width: 80px;"
-                                >
-
-                                <button
-                                    type="submit"
-                                    class="btn btn-primary ms-2"
-                                >
-                                    <i class="bi bi-arrow-repeat"></i>
-                                </button>
-
-                            </form>
-
-                        </td>
-
-                        <td>
-
-                            <strong>
-                                $<?= number_format($subtotal, 2) ?>
-                            </strong>
-
-                        </td>
-
-                        <td>
-
-                            <form
-                                action="remove_from_cart.php"
-                                method="POST"
-                            >
-
-                                <input
-                                    type="hidden"
-                                    name="producto_id"
-                                    value="<?= $producto['codigo'] ?>"
-                                >
-
-                                <button
-                                    type="submit"
-                                    class="btn btn-danger"
-                                >
-                                    <i class="bi bi-trash"></i>
-                                </button>
-
-                            </form>
-
-                        </td>
-
-                    </tr>
-
-                <?php endforeach; ?>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-
-        <div class="row justify-content-end">
-
-            <div class="col-md-5">
-
-                <div class="card">
-
-                    <div class="card-body">
-
-                        <h4 class="card-title">
-                            Resumen de compra
-                        </h4>
-
-                        <hr>
-
-                        <div class="d-flex justify-content-between">
-
-                            <span>Total:</span>
-
-                            <strong>
-                                $<?= number_format($total, 2) ?>
-                            </strong>
+                            El carrito está vacío.
 
                         </div>
 
-                        <button
-                            type="button"
-                            class="btn btn-success w-100 mt-3"
-                        >
-                            <i class="bi bi-check-circle"></i>
-                            Finalizar compra
-                        </button>
+                    <?php else: ?>
 
+                        <div class="table-responsive">
+
+                            <div class="container">
+                                <div class="row">
+                                    <p>Cuando se actualiza o cambia la cantidad de un item, para actualizar el <strong>subtotal</strong> y el <strong>total</strong> hay que dar click en el boton:                                 
+                                    <button class="btn btn-primary ms-2"><i class="bi bi-arrow-repeat"></i></button> 
+                                    junto al display de cantidad</p>
+                                </div>
+                            </div>
+
+                            <table class="table table-bordered align-middle">
+
+                                <thead class="table-dark">
+
+                                    <tr>
+
+                                        <th>Producto</th>
+
+                                        <th>Precio</th>
+
+                                        <th>Cantidad</th>
+
+                                        <th>Subtotal</th>
+
+                                        <th>Acciones</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                <?php
+
+                                foreach ($cart as $producto_id => $quantity):
+
+                                    $stmt = $conn->prepare(
+                                        "SELECT codigo, nombre, precio, imagen
+                                        FROM productos
+                                        WHERE codigo = ?"
+                                    );
+
+                                    $stmt->bind_param("i", $producto_id);
+
+                                    $stmt->execute();
+
+                                    $result = $stmt->get_result();
+
+                                    $producto = $result->fetch_assoc();
+
+                                    if (!$producto) {
+                                        continue;
+                                    }
+
+                                    $subtotal = $producto['precio'] * $quantity;
+
+                                    $total += $subtotal;
+
+                                ?>
+
+                                    <tr>
+
+                                        <td>
+
+                                            <div class="d-flex align-items-center">
+
+                                                <img
+                                                    src="<?= htmlspecialchars($producto['imagen']) ?>"
+                                                    width="70"
+                                                    height="70"
+                                                    class="rounded me-3"
+                                                    style="object-fit: cover;"
+                                                    alt="<?= htmlspecialchars($producto['nombre']) ?>"
+                                                >
+
+                                                <strong>
+                                                    <?= htmlspecialchars($producto['nombre']) ?>
+                                                </strong>
+
+                                            </div>
+
+                                        </td>
+
+                                        <td>
+
+                                            $<?= number_format($producto['precio'], 2) ?>
+
+                                        </td>
+
+                                        <td>
+
+                                            <form
+                                                action="update_cart.php"
+                                                method="POST"
+                                                class="d-flex"
+                                            >
+
+                                                <input
+                                                    type="hidden"
+                                                    name="producto_id"
+                                                    value="<?= $producto['codigo'] ?>"
+                                                >
+
+                                                <input
+                                                    type="number"
+                                                    name="quantity"
+                                                    value="<?= $quantity ?>"
+                                                    min="1"
+                                                    class="form-control"
+                                                    style="width: 80px;"
+                                                >
+
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-primary ms-2"
+                                                >
+                                                    <i class="bi bi-arrow-repeat"></i>
+                                                </button>
+
+                                            </form>
+
+                                        </td>
+
+                                        <td>
+
+                                            <strong>
+                                                $<?= number_format($subtotal, 2) ?>
+                                            </strong>
+
+                                        </td>
+
+                                        <td>
+
+                                            <form
+                                                action="remove_from_cart.php"
+                                                method="POST"
+                                            >
+
+                                                <input
+                                                    type="hidden"
+                                                    name="producto_id"
+                                                    value="<?= $producto['codigo'] ?>"
+                                                >
+
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-danger"
+                                                >
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+
+                                            </form>
+
+                                        </td>
+
+                                    </tr>
+
+                                <?php endforeach; ?>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+
+                        <div class="row justify-content-end">
+
+                            <div class="col-md-5">
+
+                                <div class="card">
+
+                                    <div class="card-body">
+
+                                        <h4 class="card-title">
+                                            Resumen de compra
+                                        </h4>
+
+                                        <hr>
+
+                                        <div class="d-flex justify-content-between">
+
+                                            <span>Total:</span>
+
+                                            <strong>
+                                                $<?= number_format($total, 2) ?>
+                                            </strong>
+
+                                        </div>
+
+                                        <a
+                                            href="checkout.php"
+                                            class="btn btn-success w-100 mt-3"
+                                        >
+                                            <i class="bi bi-check-circle"></i>
+                                            Finalizar compra
+                                        </a>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    <?php endif; ?>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Contact Section -->
+    <section id="contact" class="dark-background contact section">
+
+    <!-- Section Title -->
+    <div class="container section-title">
+        <h2>Contacto</h2>
+        <p>Tanto si tienes alguna pregunta, un proyecto en mente o simplemente quieres ponerte en contacto conmigo, no dudes en hacerlo. Haré todo lo posible por responderte lo antes posible.</p>
+    </div><!-- End Section Title -->
+
+    <div class="container">
+
+        <div class="row gy-4">
+
+        <div class="col-lg-12">
+            <form action="contact.php" method="POST" class="email-form">
+                <div class="row gy-4">
+
+                    <div class="col-md-6">
+                    <input type="text" id="name" name="name" class="form-control" placeholder="Su nombre" required>
+                    </div>
+
+                    <div class="col-md-6">
+                    <input type="text" id="phone" name="phone" class="form-control" placeholder="Su numero de telefono" required>
+                    </div>
+
+                    <div class="col-md-12">
+                    <input type="email" id="email" class="form-control" name="email" placeholder="Su Email (correo electronico)" required>
+                    </div>
+
+                    <div class="col-md-12">
+                    <textarea class="form-control" id="subject" name="subject" rows="2" placeholder="Mensaje" required></textarea>
+                    </div>
+
+                    <div class="col-md-12 text-center">
+                        <button class="btn btn-primary w-100" type="submit">Enviar mensaje</button>
                     </div>
 
                 </div>
-
-            </div>
+            </form>
+        </div>
 
         </div>
 
-    <?php endif; ?>
+    </div>
 
+    </section>
+    <!-- /Contact Section -->
 </main>
-<footer id="footer" class="footer light-background">
+<footer id="footer" class="footer dark-background">
     <div class="container">
         <div class="row g-4">
             <div class="col-md-4 col-lg-4 mb-3 mb-md-0">
