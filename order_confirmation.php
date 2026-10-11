@@ -13,20 +13,32 @@ if ($orden_id <= 0) {
     exit;
 }
 
-// Get order
-$stmt = $conn->prepare(
-    "SELECT id, email, fecha, total
-     FROM ordenes
-     WHERE id = ?"
-);
+try {
+    // Get order
+    $stmt = $conn->prepare(
+        "SELECT id, email, fecha, total
+         FROM ordenes
+         WHERE id = ?"
+    );
 
-$stmt->bind_param("i", $orden_id);
+    $stmt->bind_param("i", $orden_id);
 
-$stmt->execute();
+    $stmt->execute();
 
-$result = $stmt->get_result();
+    $result = $stmt->get_result();
 
-$orden = $result->fetch_assoc();
+    $orden = $result->fetch_assoc();
+
+    $stmt->close();
+
+} catch (Exception $e) {
+    if (isset($stmt) && $stmt instanceof mysqli_stmt) {
+        $stmt->close();
+    }
+    error_log("Error crítico al procesar la orden ID {$orden_id}: " . $e->getMessage());
+    header('Location: index.php');
+    exit;
+}
 
 if (!$orden) {
     header('Location: index.php');
