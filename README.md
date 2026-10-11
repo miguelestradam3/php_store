@@ -81,7 +81,7 @@ C:\xampp\htdocs\proyecto
 Abre phpMyAdmin o tu cliente MySQL y crea una base de datos:
 
 ```sql
-CREATE DATABASE tienda_php
+CREATE DATABASE tienda
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 ```
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS productos (
 );
 ```
 
-Para registrar los contactos o consultas de los clientes:
+Para registrar los `contactos` o `consultas` de los clientes:
 
 ```sql
 USE tienda_php;
