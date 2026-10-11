@@ -76,43 +76,44 @@
                 </div>
                 <div class="container">
                     <?php
-
+                    try {
+                        // Intentamos ejecutar la consulta de la tabla de productos
                         $res = $conn->query($sql_table);
-                        if ($res) { 
-                            if ($res->num_rows > 0) { 
-                                echo "<div class='row'>";
-                                while ($row = $res->fetch_array())  
-                                { 
-                                    echo '
-                                    <div class="col-lg-3 col-md-3 p-1">
-                                        <div class="card h-100">
-                                            <img src="'.htmlspecialchars($row['imagen']).'" class="card-img-top" alt="Imagen del producto">
-                                            <div class="card-body">
-                                                <h5 class="card-title">'.htmlspecialchars($row['nombre']).'</h5>
-                                                <p class="card-text"><strong>Detalle:</strong> '.htmlspecialchars($row['detalle']).'</p>
-                                                <p class="card-text"><strong>Precio:</strong> $'.number_format($row['precio'], 2).'</p>
-                                                <form action="add_to_cart.php" method="POST">
-                                                    <input type="hidden" name="producto_id" value="'.$row['codigo'].'">
 
-                                                    <button type="submit" class="btn btn-primary w-100">
-                                                        <i class="bi bi-cart-plus"></i>
-                                                        Agregar al carrito
-                                                    </button>
-                                                </form>
-                                            </div>
+                        if ($res && $res->num_rows > 0) { 
+                            echo "<div class='row'>";
+                            while ($row = $res->fetch_array()) { 
+                                echo '
+                                <div class="col-lg-3 col-md-3 p-1">
+                                    <div class="card h-100">
+                                        <img src="'.htmlspecialchars($row['imagen']).'" class="card-img-top" alt="Imagen del producto">
+                                        <div class="card-body">
+                                            <h5 class="card-title">'.htmlspecialchars($row['nombre']).'</h5>
+                                            <p class="card-text"><strong>Detalle:</strong> '.htmlspecialchars($row['detalle']).'</p>
+                                            <p class="card-text"><strong>Precio:</strong> $'.number_format($row['precio'], 2).'</p>
+                                            <form action="add_to_cart.php" method="POST">
+                                                <input type="hidden" name="producto_id" value="'.$row['codigo'].'">
+                                                <button type="submit" class="btn btn-primary w-100">
+                                                    <i class="bi bi-cart-plus"></i> Agregar al carrito
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
-                                    ';
-                                } 
-                                echo '</div>'; 
+                                </div>
+                                ';
                             } 
-                            else { 
-                                echo "No se han encontrado registros que coincidan."; 
-                            } 
-                        } 
-                        else { 
-                            die("ERROR: No se ha podido ejecutar la consulta. " . $conn->error); 
+                            echo '</div>'; 
+                        } else { 
+                            echo "<div class='alert alert-info'>No se han encontrado registros que coincidan.</div>"; 
                         }
+
+                    } catch (Exception $e) {
+                        // Registramos el detalle técnico en el log del servidor de forma silenciosa
+                        error_log("Error crítico al consultar productos: " . $e->getMessage());
+
+                        // Mostramos un mensaje seguro para el usuario final
+                        echo "<div class='alert alert-danger'>Ocurrió un error al cargar los productos. Por favor, inténtalo más tarde.</div>";
+                    }
                     ?>
                 </div>
             </section>

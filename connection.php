@@ -1,34 +1,31 @@
 <?php
-    // Check to ask for dev or prod info
-    $hostname = getenv('HTTP_HOST');
+    // 1. Configuramos MySQLi para que lance excepciones ante cualquier fallo
+    mysqli_report(MYSQLI_REPORT_STRICT | MYSQLI_REPORT_ERROR);
 
-    //variables
-
+    // Variables de conexión
     $servername = "localhost";
     $username = "root";
     $password = "";
     $dbname = "tienda";
 
-    // Create connection
-    if (!is_null($servername)){
-        if (!is_null($username)){
-            if (!is_null($password)){
-                if (!is_null($dbname)){
-                    $conn = new mysqli($servername, $username, $password, $dbname);
-                } else {
-                    die("Error de conexión: no se ha especificado la base de datos");
-                }
-            } else {
-                die("Error de conexión: no se ha especificado la contraseña");
-            }
-        } else {
-            die("Error de conexión: no se ha especificado el nombre de usuario");
+    try {
+        // 2. Intentamos realizar la conexión dentro del bloque try
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        
+        // Configuramos el juego de caracteres de forma segura
+        mysqli_set_charset($conn, "utf8mb4");
+        
+        // Verificamos explícitamente y lanzamos la excepción si hay un error de conexión
+        if ($conn->connect_error != null) {
+            throw new Exception("Error de conexión: " . $conn->connect_error);
         }
-    } else {
-        die("Error de conexión: no se ha especificado el servidor ni el host");
+
+    } catch (Exception $e) {
+        // 3. Registramos el error real en el archivo de log del servidor de forma silenciosa
+        error_log("Fallo crítico de conexión a MySQL: " . $e->getMessage());
+
+        // 4. Mostramos un mensaje genérico y seguro para el usuario final
+        http_response_code(500);
+        die("Ocurrió un error técnico al intentar conectar con la base de datos. Por favor, inténtalo más tarde.");
     }
-    if ($conn->connect_error != null){
-        die("Error de conexión: {$conn->connect_error}");
-    }
-    
-    mysqli_set_charset($conn, "utf8mb4");
+?>

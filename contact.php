@@ -4,9 +4,6 @@
     // 1. Bring in the connection file[cite: 3]
     require_once 'connection.php';
 
-    // 1. Configuramos MySQLi para que lance excepciones en caso de error[cite: 3]
-    mysqli_report(MYSQLI_REPORT_STRICT | MYSQLI_REPORT_ERROR);
-
     $errores = [];
     $exito = "";
     $enviado_nombre = "";
@@ -89,6 +86,8 @@
                 exit();
 
             } catch (Exception $e) {
+                // REGISTRO DE ERROR TÉCNICO: Guardamos el mensaje real en los logs del servidor de forma silenciosa
+                error_log("Error crítico al guardar la consulta en la base de datos: " . $e->getMessage());
                 // Capturamos cualquier error que ocurra en la base de datos[cite: 3]
                 $errores[] = "Ocurrió un error técnico al guardar los datos. Inténtalo más tarde.";
             }
@@ -181,7 +180,7 @@
                                 </div>
                             <?php elseif (empty($exito) && empty($errores)): ?>
                                 <div class="alert alert-danger">
-                                    <?php echo "Para que el envio de la informacion funcione hay que llenar el formulario disponible en la <a href='index.php'><strong>pagina de inicio</strong></a> y en la <a href='cart.php'><strong>pagina del carrito</strong></a>"; ?>
+                                    <?php echo "Para que el envio de la informacion funcione hay que llenar el formulario disponible en la <a href='index.php#contact'><strong>pagina de inicio</strong></a> y en la <a href='cart.php#contact'><strong>pagina del carrito</strong></a>"; ?>
                                 </div>
                             <?php endif; ?>
                         </div>

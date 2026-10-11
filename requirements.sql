@@ -40,7 +40,7 @@ VALUES
 Tabla de contactos
 */
 
-/*1. Asegúrate de usar tu base de datos*/
+/*1. Asegúramos el usar la base de datos*/
 
 USE tienda;
 
@@ -53,4 +53,29 @@ CREATE TABLE IF NOT EXISTS consultas (
     correo VARCHAR(150) NOT NULL,
     detalle TEXT NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+/*
+EXTRA: Tablas para guardar las compras de cada usuario
+*/
+
+CREATE TABLE IF NOT EXISTS ordenes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(150) NOT NULL,
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+    total DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS detalle_orden (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    orden_id INT NOT NULL,
+    producto_id INT NOT NULL,
+    cantidad INT NOT NULL,
+    precio DECIMAL(10,2) NOT NULL,
+    subtotal DECIMAL(10,2) NOT NULL,
+
+    CONSTRAINT fk_detalle_orden
+        FOREIGN KEY (orden_id)
+        REFERENCES ordenes(id)
+        ON DELETE CASCADE
 );

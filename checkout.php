@@ -25,10 +25,9 @@ $total = 0;
     <title>Finalizar compra - PHP Avanzado</title>
 
     <!-- Favicons -->
-    <link
-        href="assets/img/phpicon.png"
-        rel="icon"
-    >
+    <link href="assets/img/phpicon.png" rel="icon">
+    <link href="assets/img/phpicon.png" rel="apple-touch-icon">
+
 
     <!-- Bootstrap -->
     <link
@@ -128,7 +127,7 @@ $total = 0;
                     ></i>
 
                     <h1 class="mt-3">
-                        ¡Gracias por tu compra!
+                        ¡Solo un paso más!
                     </h1>
 
                     <p class="lead">
@@ -159,31 +158,42 @@ $total = 0;
 
                                     <?php
 
-                                    $stmt = $conn->prepare(
-                                        "SELECT codigo, nombre, precio, imagen
-                                         FROM productos
-                                         WHERE codigo = ?"
-                                    );
+                                    try {
+                                        $stmt = $conn->prepare(
+                                            "SELECT codigo, nombre, precio, imagen
+                                             FROM productos
+                                             WHERE codigo = ?"
+                                        );
 
-                                    $stmt->bind_param(
-                                        "i",
-                                        $producto_id
-                                    );
+                                        $stmt->bind_param(
+                                            "i",
+                                            $producto_id
+                                        );
 
-                                    $stmt->execute();
+                                        $stmt->execute();
 
-                                    $result = $stmt->get_result();
+                                        $result = $stmt->get_result();
 
-                                    $producto = $result->fetch_assoc();
+                                        $producto = $result->fetch_assoc();
 
-                                    if (!$producto) {
+                                        $stmt->close();
+
+                                        if (!$producto) {
+                                            continue;
+                                        }
+
+                                        $subtotal =
+                                            $producto['precio'] * $quantity;
+
+                                        $total += $subtotal;
+
+                                    } catch (Exception $e) {
+                                        if (isset($stmt) && $stmt instanceof mysqli_stmt) {
+                                            $stmt->close();
+                                        }
+                                        error_log("Error crítico al procesar el producto ID {$producto_id} en el resumen de compra: " . $e->getMessage());
                                         continue;
                                     }
-
-                                    $subtotal =
-                                        $producto['precio'] * $quantity;
-
-                                    $total += $subtotal;
 
                                     ?>
 
@@ -274,6 +284,39 @@ $total = 0;
                                     próximamente.
 
                                 </div>
+
+                                <form action="process_order.php" method="POST">
+
+                                    <div class="mb-3">
+
+                                        <label for="email" class="form-label">
+                                            Correo electrónico
+                                        </label>
+
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            name="email"
+                                            class="form-control"
+                                            placeholder="example@email.com"
+                                            required
+                                        >
+
+                                        <div class="form-text">
+                                            Utilizaremos este correo para contactarte sobre tu pedido.
+                                        </div>
+
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-success w-100"
+                                    >
+                                        <i class="bi bi-check-circle"></i>
+                                        Confirmar pedido
+                                    </button>
+
+                                </form>
 
 
                                 <div class="text-center mt-4">

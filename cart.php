@@ -139,27 +139,38 @@ $total = 0;
 
                                 foreach ($cart as $producto_id => $quantity):
 
-                                    $stmt = $conn->prepare(
-                                        "SELECT codigo, nombre, precio, imagen
-                                        FROM productos
-                                        WHERE codigo = ?"
-                                    );
+                                    try {
+                                        $stmt = $conn->prepare(
+                                            "SELECT codigo, nombre, precio, imagen
+                                            FROM productos
+                                            WHERE codigo = ?"
+                                        );
 
-                                    $stmt->bind_param("i", $producto_id);
+                                        $stmt->bind_param("i", $producto_id);
 
-                                    $stmt->execute();
+                                        $stmt->execute();
 
-                                    $result = $stmt->get_result();
+                                        $result = $stmt->get_result();
 
-                                    $producto = $result->fetch_assoc();
+                                        $producto = $result->fetch_assoc();
 
-                                    if (!$producto) {
+                                        $stmt->close();
+
+                                        if (!$producto) {
+                                            continue;
+                                        }
+
+                                        $subtotal = $producto['precio'] * $quantity;
+
+                                        $total += $subtotal;
+
+                                    } catch (Exception $e) {
+                                        if (isset($stmt) && $stmt instanceof mysqli_stmt) {
+                                            $stmt->close();
+                                        }
+                                        error_log("Error crítico al procesar el producto ID {$producto_id} en el carrito: " . $e->getMessage());
                                         continue;
                                     }
-
-                                    $subtotal = $producto['precio'] * $quantity;
-
-                                    $total += $subtotal;
 
                                 ?>
 
@@ -370,7 +381,7 @@ $total = 0;
             <div class="widget">
                 <h3 class="widget-heading">Especialización en Diseño y Desarrollo Web</h3>
                 <p class="mb-4">
-                    Aqui aprendere a desarrollar sitios web completos, integrando diseño visual y programación, dos habilidades clave en el entorno digital actual. 
+                    Aqui aprendere a desarrollar sitios web completos, integrando diseño visual y programación, dos habilidades clave en el entorno digital actual[cite: 7]. 
                 </p>
             </div>
             </div>
@@ -381,7 +392,7 @@ $total = 0;
                     <li>
                         <span class="d-block date">PHP Avanzado</span>
                         <a href="#">
-                            Entre otras cosas, en este curso aprendere a aplicar los métodos que proporciona el protocolo HTTP y tipos de datos en PHP para el envío e implementación de datos en formularios del servidor<br>Asi como el uso de <strong>bases de datos</strong> para el almacenamiento de informacion
+                            Entre otras cosas, en este curso aprendere a aplicar los métodos que proporciona el protocolo HTTP y tipos de datos en PHP para el envío e implementación de datos en formularios del servidor<br>Asi como el uso de <strong>bases de datos</strong> para el almacenamiento de informacion[cite: 7]
                         </a>
                     </li>
                     </ul>
