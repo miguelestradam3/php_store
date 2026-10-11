@@ -59,6 +59,8 @@ CREATE TABLE IF NOT EXISTS consultas (
 EXTRA: Tablas para guardar las compras de cada usuario
 */
 
+USE tienda;
+
 CREATE TABLE IF NOT EXISTS ordenes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(150) NOT NULL,

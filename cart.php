@@ -91,6 +91,39 @@ $total = 0;
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
+                    <?php if (isset($_SESSION['cart_error'])): ?>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <?= htmlspecialchars($_SESSION['cart_error']) ?>
+
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="alert"
+                                    aria-label="Close">
+                            </button>
+                        </div>
+                        <?php unset($_SESSION['cart_error']); ?>
+                    <?php endif; ?>
+
+                    <?php if (isset($_SESSION['cart_success'])): ?>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <?= htmlspecialchars($_SESSION['cart_success']) ?>
+
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="alert"
+                                    aria-label="Close">
+                            </button>
+                        </div>
+                        <?php unset($_SESSION['cart_success']); ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
                     <?php if (empty($cart)): ?>
 
                         <div class="alert alert-info text-center">
@@ -101,7 +134,7 @@ $total = 0;
 
                         </div>
 
-                    <?php else: ?>
+                    <?php elseif (!empty($cart) && ($conn instanceof mysqli)): ?>
 
                         <div class="table-responsive">
 
@@ -140,6 +173,11 @@ $total = 0;
                                 foreach ($cart as $producto_id => $quantity):
 
                                     try {
+                                        // Verificamos que la conexión sea válida antes de preparar
+                                        if (!isset($conn) || !($conn instanceof mysqli)) {
+                                            throw new Exception("La conexión a la base de datos no está inicializada.");
+                                        }
+
                                         $stmt = $conn->prepare(
                                             "SELECT codigo, nombre, precio, imagen
                                             FROM productos
@@ -165,7 +203,7 @@ $total = 0;
                                         $total += $subtotal;
 
                                     } catch (Exception $e) {
-                                        if (isset($stmt) && $stmt instanceof mysqli_stmt) {
+                                        if (isset($conn) && $conn instanceof mysqli && isset($stmt) && $stmt instanceof mysqli_stmt) {
                                             $stmt->close();
                                         }
                                         error_log("Error crítico al procesar el producto ID {$producto_id} en el carrito: " . $e->getMessage());
@@ -181,16 +219,16 @@ $total = 0;
                                             <div class="d-flex align-items-center">
 
                                                 <img
-                                                    src="<?= htmlspecialchars($producto['imagen']) ?>"
+                                                    src="<?= htmlspecialchars($producto['imagen'] ?? '') ?>"
                                                     width="70"
                                                     height="70"
                                                     class="rounded me-3"
                                                     style="object-fit: cover;"
-                                                    alt="<?= htmlspecialchars($producto['nombre']) ?>"
+                                                    alt="<?= htmlspecialchars($producto['nombre'] ?? '') ?>"
                                                 >
 
                                                 <strong>
-                                                    <?= htmlspecialchars($producto['nombre']) ?>
+                                                    <?= htmlspecialchars($producto['nombre'] ?? 'Desconocido') ?>
                                                 </strong>
 
                                             </div>
@@ -199,7 +237,7 @@ $total = 0;
 
                                         <td>
 
-                                            $<?= number_format($producto['precio'], 2) ?>
+                                            $<?= number_format($producto['precio'] ?? 0, 2) ?>
 
                                         </td>
 
@@ -214,7 +252,7 @@ $total = 0;
                                                 <input
                                                     type="hidden"
                                                     name="producto_id"
-                                                    value="<?= $producto['codigo'] ?>"
+                                                    value="<?= $producto['codigo'] ?? $producto_id ?>"
                                                 >
 
                                                 <input
@@ -240,7 +278,7 @@ $total = 0;
                                         <td>
 
                                             <strong>
-                                                $<?= number_format($subtotal, 2) ?>
+                                                $<?= number_format($subtotal ?? 0, 2) ?>
                                             </strong>
 
                                         </td>
@@ -255,7 +293,7 @@ $total = 0;
                                                 <input
                                                     type="hidden"
                                                     name="producto_id"
-                                                    value="<?= $producto['codigo'] ?>"
+                                                    value="<?= $producto['codigo'] ?? $producto_id ?>"
                                                 >
 
                                                 <button

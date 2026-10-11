@@ -176,7 +176,7 @@
                             <?php elseif (!empty($exito)): ?>
                                 <div class="alert alert-success">
                                     <?php echo htmlspecialchars($exito); ?>
-                                    <p>Saludos, <?php echo htmlspecialchars($enviado_nombre); ?>! Nos pondremos en contacto a su número de teléfono: <?php echo htmlspecialchars($enviado_phone); ?> o a su correo electrónico: <?php echo htmlspecialchars($enviado_email); ?></p>
+                                    <p>Saludos, <strong><?php echo htmlspecialchars($enviado_nombre); ?></strong>! Nos pondremos en contacto a su número de teléfono: <strong><?php echo htmlspecialchars($enviado_phone); ?></strong> o a su correo electrónico: <strong><?php echo htmlspecialchars($enviado_email); ?></strong></p>
                                 </div>
                             <?php elseif (empty($exito) && empty($errores)): ?>
                                 <div class="alert alert-danger">

@@ -285,6 +285,25 @@ $total = 0;
 
                                 </div>
 
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <?php if (isset($_SESSION['cart_error'])): ?>
+                                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                    <?= htmlspecialchars($_SESSION['cart_error']) ?>
+
+                                                    <button type="button"
+                                                            class="btn-close"
+                                                            data-bs-dismiss="alert"
+                                                            aria-label="Close">
+                                                    </button>
+                                                </div>
+                                                <?php unset($_SESSION['cart_error']); ?>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <form action="process_order.php" method="POST">
 
                                     <div class="mb-3">
@@ -298,7 +317,7 @@ $total = 0;
                                             id="email"
                                             name="email"
                                             class="form-control"
-                                            placeholder="example@email.com"
+                                            placeholder="ejemplo@email.com"
                                             required
                                         >
 

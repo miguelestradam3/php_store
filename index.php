@@ -70,6 +70,39 @@
         </header>
         <main class="main">
             <section class="section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <?php if (isset($_SESSION['cart_error'])): ?>
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <?= htmlspecialchars($_SESSION['cart_error']) ?>
+
+                                    <button type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="alert"
+                                            aria-label="Close">
+                                    </button>
+                                </div>
+                                <?php unset($_SESSION['cart_error']); ?>
+                            <?php endif; ?>
+
+                            <?php if (isset($_SESSION['cart_success'])): ?>
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <?= htmlspecialchars($_SESSION['cart_success']) ?>
+
+                                    <button type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="alert"
+                                            aria-label="Close">
+                                    </button>
+                                </div>
+                                <?php unset($_SESSION['cart_success']); ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="section">
                 <div class="container section-title" data-aos="fade-up">
                     <p>Artículos disponibles en el mercado</p>
                     <h2>Artículos disponibles en el mercado</h2>
@@ -77,6 +110,11 @@
                 <div class="container">
                     <?php
                     try {
+                        // Verificamos que la conexión exista y sea un objeto mysqli válido
+                        if (!isset($conn) || !($conn instanceof mysqli)) {
+                            throw new Exception("La conexión a la base de datos no está inicializada.");
+                        }
+
                         // Intentamos ejecutar la consulta de la tabla de productos
                         $res = $conn->query($sql_table);
 
@@ -111,7 +149,7 @@
                         // Registramos el detalle técnico en el log del servidor de forma silenciosa
                         error_log("Error crítico al consultar productos: " . $e->getMessage());
 
-                        // Mostramos un mensaje seguro para el usuario final
+                        // Mostramos un mensaje seguro para el usuario final sin romper la página
                         echo "<div class='alert alert-danger'>Ocurrió un error al cargar los productos. Por favor, inténtalo más tarde.</div>";
                     }
                     ?>

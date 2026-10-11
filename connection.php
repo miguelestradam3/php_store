@@ -26,6 +26,7 @@
 
         // 4. Mostramos un mensaje genérico y seguro para el usuario final
         http_response_code(500);
-        die("Ocurrió un error técnico al intentar conectar con la base de datos. Por favor, inténtalo más tarde.");
+        $conn = false;
+        $_SESSION['cart_error'] = "Fallo crítico de conexión";
     }
 ?>

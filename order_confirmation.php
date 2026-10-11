@@ -6,14 +6,17 @@ require_once 'connection.php';
 
 $orden_id = intval($_SESSION['order'] ?? 0);
 
-unset($_SESSION['order']);
-
 if ($orden_id <= 0) {
     header('Location: index.php');
     exit;
 }
 
 try {
+    // Verificamos que la conexión sea válida antes de iniciar la transacción
+    if (!isset($conn) || !($conn instanceof mysqli)) {
+        throw new Exception("La conexión a la base de datos no está inicializada.");
+    }
+    
     // Get order
     $stmt = $conn->prepare(
         "SELECT id, email, fecha, total
@@ -41,6 +44,8 @@ try {
 }
 
 if (!$orden) {
+    $_SESSION['cart_error'] = 'Se ha producido un error, el ID de compra no es valido (No existe una compra con ese ID). Inténtalo de nuevo.';
+    error_log($_SESSION['cart_error']);
     header('Location: index.php');
     exit;
 }

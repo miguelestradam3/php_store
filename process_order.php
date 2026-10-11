@@ -6,6 +6,8 @@ require_once 'connection.php';
 
 // Make sure the request comes from the checkout form
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    $_SESSION['cart_error'] = 'Error de acceso: Se intento acceder normalmente a una pagina que se encuentra dentro de un flujo (POST).';
+    error_log($_SESSION['cart_error']);
     header('Location: index.php');
     exit;
 }
@@ -15,7 +17,9 @@ $email = trim($_POST['email'] ?? '');
 
 // Validate email
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    header('Location: checkout.php?error=email');
+    $_SESSION['cart_error'] = 'Error de input: El correo que se ha introducido no es un correo como tal.';
+    error_log($_SESSION['cart_error']);
+    header('Location: checkout.php');
     exit;
 }
 
@@ -24,11 +28,18 @@ $cart = $_SESSION['cart'] ?? [];
 
 // Make sure cart isn't empty
 if (empty($cart)) {
+    $_SESSION['cart_error'] = 'El carrito se encuentra vacio, no es posible procesar la compra.';
+    error_log($_SESSION['cart_error']);
     header('Location: index.php');
     exit;
 }
 
 try {
+    
+    // Verificamos que la conexión sea válida antes de iniciar la transacción
+    if (!isset($conn) || !($conn instanceof mysqli)) {
+        throw new Exception("La conexión a la base de datos no está inicializada.");
+    }
 
     // Start transaction
     $conn->begin_transaction();
@@ -164,12 +175,15 @@ try {
      * Undo the database changes.
      */
 
-    $conn->rollback();
+    if (!isset($conn) || !($conn instanceof mysqli)) {
+        $_SESSION['cart_error'] = 'Fallo crítico de conexión a MySQL: Error en procesar la orden';
+        error_log($_SESSION['cart_error']);
+    } else {
+        $conn->rollback();
+    }
 
-    error_log("No se pudo procesar el pedido:: " . $e->getMessage());
+    $_SESSION['cart_error'] = 'No se pudo procesar el pedido.';
+    error_log("No se pudo procesar el pedido: " . $e->getMessage());
 
-    die(
-        "No se pudo procesar el pedido: "
-        . htmlspecialchars($e->getMessage())
-    );
+    header('Location: cart.php');
 }
