@@ -93,7 +93,7 @@ El catálogo necesita una tabla `productos` con los campos que utiliza el códig
 Ejemplo de estructura:
 
 ```sql
-USE tienda_php;
+USE tienda;
 
 CREATE TABLE IF NOT EXISTS productos (
     codigo INT AUTO_INCREMENT PRIMARY KEY,
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS productos (
 Para registrar los `contactos` o `consultas` de los clientes:
 
 ```sql
-USE tienda_php;
+USE tienda;
 
 CREATE TABLE IF NOT EXISTS consultas (
     id INT AUTO_INCREMENT PRIMARY KEY,
