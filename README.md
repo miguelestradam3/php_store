@@ -243,12 +243,12 @@ Almacena el catálogo de artículos disponibles.
 
 | Campo | Descripción |
 |---|---|
-| `id` | Identificador único del producto |
-| `nombre` | Nombre del producto |
-| `telefono` | Descripción del producto |
-| `correo` | Ruta de la imagen |
-| `detalle` | Precio actual del producto |
-| `fecha_creacion` | Precio actual del producto |
+| `id` | Identificador único del contacto |
+| `nombre` | Nombre de la persona |
+| `telefono` | Numero de telefono del contacto |
+| `correo` | Correo electronico del contacto |
+| `detalle` | De que trata la consulta del contacto |
+| `fecha_creacion` | Fecha y hora del contacto |
 
 ### `ordenes`
 
