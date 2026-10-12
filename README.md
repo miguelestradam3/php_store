@@ -239,7 +239,7 @@ Almacena el catálogo de artículos disponibles.
 
 ### `consultas`
 
-Almacena el catálogo de artículos disponibles.
+Almacena el intento de contacto en la pagina
 
 | Campo | Descripción |
 |---|---|
